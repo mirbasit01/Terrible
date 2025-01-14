@@ -1,3 +1,3 @@
 // utils/contractAddress.js
 
-export const contractAddress = "0x8065D8DbE43DD6bA1338750Ce078d66196C5024f";
+export const contractAddress = "0x8577f817aff1a814205d9907e76f549558522835";

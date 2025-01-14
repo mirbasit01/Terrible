@@ -481,7 +481,6 @@
 
 // export default Welcome
 
-
 import React, { useState } from "react";
 import { AiFillPlayCircle } from "react-icons/ai";
 import Web3 from "web3";
@@ -495,6 +494,8 @@ const Welcome = () => {
   const [contract, setContract] = useState(null); // Contract instance
   const [isLoading, setIsLoading] = useState(false); // Loading state for transactions
       const [transactionStatus, setTransactionStatus] = useState("");
+      const [transactionList, setTransactionList] = useState([]);
+
 
   // const [formData, setFormData] = useState({
   //   addressTo: '',
@@ -503,7 +504,7 @@ const Welcome = () => {
   //   keyword: '' // Add the keyword field here
   // });
 
-
+ 
   const [formData, setFormData] = useState({
   addressTo: '',
   amount: '',
@@ -530,7 +531,7 @@ const Welcome = () => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const userAddress = accounts[0];
         setAdre(userAddress);
-
+            
         const contractInstance = new web3Instance.eth.Contract(contractABI, contractAddress);
         setContract(contractInstance);
         console.log("Wallet connected:", userAddress);
@@ -546,7 +547,7 @@ const Welcome = () => {
   // Function to disconnect the user's wallet
 const disconnectWallet = () => {
   // Ask the user for confirmation before disconnecting
-  const userConfirmed = window.confirm("Are you sure you want to disconnect the wallet?");
+  const userConfirmed    = window.confirm("Are you sure you want to disconnect the wallet?");
   if (userConfirmed) {
     setAdre(""); // Clear the wallet address from state
   }
@@ -580,13 +581,47 @@ const disconnectWallet = () => {
 
   //   setIsLoading(false);
   // };
-const handelsubmit = async () => {
+// const handelsubmit = async () => {
+//   if (!web3 || !adre || !contract) {
+//     alert("Please connect your wallet first.");
+//     return;
+//   }
+
+//     const accounts = await web3.eth.getAccounts();
+
+//   const { addressTo, amount, message, keyword } = formData;
+
+//   if (!addressTo || !amount || !message || !keyword) {
+//     alert("All fields are required.");
+//     return;
+//   }
+
+//   setIsLoading(true);
+
+//   try {
+//     const tx = await contract.methods
+//       .addToBlockchain(addressTo, web3.utils.toWei(amount, "ether"), message, keyword)
+//       .send({ from: accounts[0] });
+
+//     console.log("Transaction successful:", tx);
+//      // Set success message upon successful transaction
+//       setTransactionStatus(`Transaction successful: ${tx.transactionHash}`);
+//   } catch (error) {
+//     console.error("Transaction failed:", error);
+//      // Set error message if the transaction fails
+//       setTransactionStatus(`Transaction failed: ${error.message}`);
+//   }
+
+//   setIsLoading(false);
+// };
+  const handelsubmit = async () => {
   if (!web3 || !adre || !contract) {
     alert("Please connect your wallet first.");
     return;
   }
 
-    const accounts = await web3.eth.getAccounts();
+
+  const accounts = await web3.eth.getAccounts();
 
   const { addressTo, amount, message, keyword } = formData;
 
@@ -603,18 +638,58 @@ const handelsubmit = async () => {
       .send({ from: accounts[0] });
 
     console.log("Transaction successful:", tx);
-     // Set success message upon successful transaction
-      setTransactionStatus(`Transaction successful: ${tx.transactionHash}`);
+    // Set success message upon successful transaction
+    setTransactionStatus(`Transaction successful: ${tx.transactionHash}`);
   } catch (error) {
     console.error("Transaction failed:", error);
-     // Set error message if the transaction fails
-      setTransactionStatus(`Transaction failed: ${error.message}`);
+    // Set error message if the transaction fails
+    setTransactionStatus(`Transaction failed: ${error.message}`);
   }
 
   setIsLoading(false);
 };
 
-  
+// Function to fetch all transactions
+// const getAllTransactions = async () => {
+//   if (!web3 || !contract) {
+//     alert("Please connect your wallet first.");
+//     return;
+//   }
+
+//   try {
+//     const transactions = await contract.methods.getAllTransactions().call();
+//     console.log("Fetched transactions:", transactions);
+
+//     // Display the fetched transactions
+//     setTransactionList(transactions);
+//   } catch (error) {
+//     console.error("Failed to fetch transactions:", error);
+//     alert("Failed to fetch transactions. Check console for details.");
+//   }
+// };
+
+  const getAllTransactions = async () => {
+  if (!web3 || !contract) {
+    alert("Please connect your wallet first.");
+    return;
+  }
+
+  try {
+    // Fetch transactions from the contract
+    const transactions = await contract.methods.getAllTransactions().call();
+    console.log("Fetched transactions:", transactions);
+
+
+    
+
+    // Update the state to display transactions
+    setTransactionList(transactions);
+  } catch (error) {
+    console.error("Failed to fetch transactions:", error);
+    // alert("Failed to fetch transactions. Check console for details.");
+  }
+};
+
   return (
     <div className="flex w-full justify-center items-center">
       <div className="flex flex-col items-start justify-between md:p-20 py-12 px-4">
@@ -659,6 +734,14 @@ const handelsubmit = async () => {
           </p>
         </button>
       )}
+      
+           <div className="text-white font-light text-sm">
+         {/* 0xjndfjmasd...fsnjnvskd */}
+        {adre && adre.length > 0 ? adre : "No wallet connected"}                      {/* {adre} */}
+               </div>
+                <div className="text-white font-semibold  text-lg"> 
+                   Ethereum
+        </div>
           <div className="flex flex-col w-full mt-10">
             <div className="flex flex-row justify-between mb-2">
               <label className="text-white text-sm">Recipient Address:</label>
@@ -719,13 +802,37 @@ const handelsubmit = async () => {
           </div>
 
       {/* Transaction Status Display */}
-      <div style={{ marginTop: "20px", color: "green" }}>
+      {/* <div style={{ marginTop: "20px", color: "green" }}>
         {transactionStatus && (
           <div>
             <p>{transactionStatus}</p>
+          <p>
+
+          </p>
           </div>
         )}
-      </div>
+      </div> */}
+
+ <div>
+  <button onClick={getAllTransactions} className="bg-[#2952e3] text-white p-3 rounded-full mt-5 mb-3" >Fetch All Transactions</button>
+  <div>
+    {transactionList.length > 0 ? (
+      transactionList.map((tx, index) => (
+        <div key={index} style={{ marginBottom: "20px", border: "1px solid #ddd", padding: "10px", color: 'white' }}>
+          <p><strong>Sender:</strong> {tx.sender}</p>
+          <p><strong>Receiver:</strong> {tx.receiver}</p>
+          <p><strong>Amount:</strong> {web3.utils.fromWei(tx.amount, "ether")} ETH</p>
+          <p><strong>Message:</strong> {tx.message}</p>
+          <p><strong>Keyword:</strong> {tx.keyword}</p>
+          {/* <p><strong>Timestamp:</strong> {new Date(tx.timestamp * 1000).toLocaleString()}</p> */}
+        </div>
+      ))
+    ) : (
+      <p className="text-white">No transactions found.</p>
+    )}
+  </div>
+</div>
+
 
         </div>
       </div>

@@ -133,7 +133,7 @@
 //     ]
 //     // Add other ABI elements as necessary
 // ];
- 
+
 
 export const contractABI = [
     {
@@ -265,4 +265,4 @@ export const contractABI = [
         "stateMutability": "view",
         "type": "function"
     }
-];
+]
