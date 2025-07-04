@@ -18,7 +18,7 @@ const useTransactions = (web3, contract, adre) => {
       alert("All fields are required.");
       return;
     }
-
+    
     setIsLoading(true);
 
     try {
