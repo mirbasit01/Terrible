@@ -3,7 +3,7 @@ import { useState } from "react";
 const useTransactions = (web3, contract, adre) => {
   const [isLoading, setIsLoading] = useState(false); // For loading state
   const [transactionStatus, setTransactionStatus] = useState(""); // For transaction status
-  const [transactionList, setTransactionList] = useState([]); // For storing transaction data
+  const [transactionList, setTransactionList] = useState([]); 
 
   // Submit a transaction to the blockchain
   const handleSubmit = async (formData) => {
@@ -18,7 +18,6 @@ const useTransactions = (web3, contract, adre) => {
       alert("All fields are required.");
       return;
     }
-    
     setIsLoading(true);
 
     try {
